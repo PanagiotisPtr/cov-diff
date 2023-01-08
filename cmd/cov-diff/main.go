@@ -1,7 +1,7 @@
 package main
 
-import "fmt"
+import "github.com/panagiotisptr/cov-diff/hello"
 
 func main() {
-	fmt.Println("hello world")
+	hello.SayHello()
 }
