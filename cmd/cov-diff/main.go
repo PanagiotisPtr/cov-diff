@@ -75,7 +75,6 @@ func main() {
 		if _, ok := fileCPs[relativeFilename]; !ok {
 			fileCPs[relativeFilename] = []*cover.Profile{}
 		}
-		fmt.Println(relativeFilename)
 		fileCPs[relativeFilename] = append(fileCPs[relativeFilename], cp)
 	}
 
@@ -92,9 +91,6 @@ func main() {
 		}
 		aois := []AreaOfInterest{}
 
-		fmt.Println("filename: ", fc.Filename)
-		fmt.Println("Lines Changed: ", fc.LineNumbers)
-
 		fb, err := os.ReadFile(fc.Filename)
 		if err != err {
 			panic(err)
@@ -108,7 +104,6 @@ func main() {
 				Start: token.Pos(count),
 				End:   token.Pos(count + len(fl)),
 			}
-			fmt.Println(fl)
 			count += len(fl) + 1
 		}
 
@@ -116,6 +111,11 @@ func main() {
 		parsedFile, err := parser.ParseFile(fset, fc.Filename, nil, 0)
 		if err != nil {
 			panic(err)
+		}
+
+		// we don't care about coverage on the main package
+		if parsedFile.Name.Name == "main" {
+			continue
 		}
 
 		for _, d := range parsedFile.Decls {
@@ -155,22 +155,18 @@ func main() {
 			}
 
 			loi[ln] = false
-			fmt.Println("loi: ", ln)
 		}
 
 		for range loi {
 			totalLines++
 		}
 
-		fmt.Println(fc.Filename)
 		if _, ok := fileCPs[fc.Filename]; !ok {
 			continue
 		}
 
 		for _, cps := range fileCPs[fc.Filename] {
 			for _, b := range cps.Blocks {
-				fmt.Println(b.StartLine)
-				fmt.Println(b.EndLine)
 				for i := b.StartLine; i <= b.EndLine; i++ {
 					if _, ok := loi[i]; ok {
 						loi[i] = true
