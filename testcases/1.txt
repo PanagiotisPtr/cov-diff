@@ -1,0 +1,27 @@
+diff --git a/cmd/cov-diff/main.go b/cmd/cov-diff/main.go
+index c048119..cfc9435 100644
+--- a/cmd/cov-diff/main.go
++++ b/cmd/cov-diff/main.go
+@@ -1,7 +1,7 @@
+ package main
+ 
+-import "fmt"
++import "github.com/panagiotisptr/cov-diff/hello"
+ 
+ func main() {
+-	fmt.Println("hello world")
++	hello.SayHello()
+ }
+diff --git a/hello/hello.go b/hello/hello.go
+new file mode 100644
+index 0000000..7ee0a42
+--- /dev/null
++++ b/hello/hello.go
+@@ -0,0 +1,7 @@
++package hello
++
++import "fmt"
++
++func SayHello() {
++	fmt.Println("hello")
++}
