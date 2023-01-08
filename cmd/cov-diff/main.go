@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"strings"
@@ -8,6 +9,8 @@ import (
 	"github.com/panagiotisptr/cov-diff/hello"
 	"github.com/sourcegraph/go-diff/diff"
 )
+
+var packageName = flag.String("module", "", "the name of the go module")
 
 type FileChanges struct {
 	Filename    string
@@ -21,11 +24,11 @@ func ComputeFileChangesFromHunk(
 	parts := strings.Split(f.NewName, "/")
 	filename := strings.Join(parts[1:], "/")
 
-	fc.Filename = filename
+	fc.Filename = strings.Join([]string{*packageName, filename}, "/")
 
 	for _, h := range f.Hunks {
 		lines := strings.Split(string(h.Body), "\n")
-		ln := 1
+		ln := int(h.NewStartLine)
 		for _, l := range lines {
 			if len(l) > 0 && l[0] == '-' {
 				continue
@@ -41,6 +44,7 @@ func ComputeFileChangesFromHunk(
 }
 
 func main() {
+	flag.Parse()
 	hello.SayHello()
 	b, err := ioutil.ReadFile("testcases/1.txt")
 	if err != err {
