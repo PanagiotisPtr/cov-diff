@@ -1,17 +1,24 @@
 diff --git a/cmd/cov-diff/main.go b/cmd/cov-diff/main.go
-index c048119..cfc9435 100644
+index 743ad59..5779daf 100644
 --- a/cmd/cov-diff/main.go
 +++ b/cmd/cov-diff/main.go
-@@ -1,7 +1,7 @@
- package main
+@@ -5,6 +5,7 @@ import (
+ 	"io/ioutil"
+ 	"strings"
  
--import "fmt"
-+import "github.com/panagiotisptr/cov-diff/hello"
++	"github.com/panagiotisptr/cov-diff/hello"
+ 	"github.com/sourcegraph/go-diff/diff"
+ )
+ 
+@@ -40,7 +41,7 @@ func ComputeFileChangesFromHunk(
+ }
  
  func main() {
 -	fmt.Println("hello world")
 +	hello.SayHello()
- }
+ 	b, err := ioutil.ReadFile("testcases/1.txt")
+ 	if err != err {
+ 		panic(err)
 diff --git a/hello/hello.go b/hello/hello.go
 new file mode 100644
 index 0000000..7ee0a42

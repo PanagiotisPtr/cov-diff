@@ -24,7 +24,7 @@ func ComputeFileChangesFromHunk(
 
 	for _, h := range f.Hunks {
 		lines := strings.Split(string(h.Body), "\n")
-		ln := 1
+		ln := int(h.NewStartLine)
 		for _, l := range lines {
 			if len(l) > 0 && l[0] == '-' {
 				continue
