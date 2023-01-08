@@ -1,12 +1,15 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"strings"
 
 	"github.com/sourcegraph/go-diff/diff"
 )
+
+var packageName = flag.String("module", "", "the name of the go module")
 
 type FileChanges struct {
 	Filename    string
@@ -20,7 +23,7 @@ func ComputeFileChangesFromHunk(
 	parts := strings.Split(f.NewName, "/")
 	filename := strings.Join(parts[1:], "/")
 
-	fc.Filename = filename
+	fc.Filename = strings.Join([]string{*packageName, filename}, "/")
 
 	for _, h := range f.Hunks {
 		lines := strings.Split(string(h.Body), "\n")
@@ -40,6 +43,7 @@ func ComputeFileChangesFromHunk(
 }
 
 func main() {
+	flag.Parse()
 	fmt.Println("hello world")
 	b, err := ioutil.ReadFile("testcases/1.txt")
 	if err != err {
