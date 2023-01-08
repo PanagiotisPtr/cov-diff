@@ -8,6 +8,7 @@ import (
 
 	"github.com/panagiotisptr/cov-diff/hello"
 	"github.com/sourcegraph/go-diff/diff"
+	"golang.org/x/tools/cover"
 )
 
 var packageName = flag.String("module", "", "the name of the go module")
@@ -59,5 +60,14 @@ func main() {
 		fc := ComputeFileChangesFromHunk(f)
 		fmt.Println("filename: ", fc.Filename)
 		fmt.Println("Lines Changed: ", fc.LineNumbers)
+
+		_, err := cover.ParseProfiles("testcases/1.coverage")
+		if err != nil {
+			panic(err)
+		}
+
+		// todo
+		// for _, cp := range cps {
+		// }
 	}
 }
