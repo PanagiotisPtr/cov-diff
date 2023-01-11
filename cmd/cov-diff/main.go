@@ -32,7 +32,7 @@ type AreaOfInterest struct {
 	End   token.Pos
 }
 
-func ComputeFileChangesFromHunk(
+func computeFileChangesFromHunk(
 	f *diff.FileDiff,
 ) FileChanges {
 	fc := FileChanges{}
@@ -58,33 +58,22 @@ func ComputeFileChangesFromHunk(
 	return fc
 }
 
-func exitWithError(err error, msg string) {
-	fmt.Printf("%s: %v\n", msg, err)
-	os.Exit(1)
-}
-
 func main() {
-	out, err := exec.Command("git", "diff").Output()
+	flag.Parse()
+
+	diffBytes, err := exec.Command("git", "diff", *targetBranch, *sourceBranch).Output()
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("The date is %s\n", out)
-	return
-	flag.Parse()
-	b, err := os.ReadFile(filepath.Join(*path, "testcases/1.txt"))
-	if err != err {
-		panic(err)
-	}
-	fs, err := diff.ParseMultiFileDiff(b)
+
+	fs, err := diff.ParseMultiFileDiff(diffBytes)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
-	cps, err := cover.ParseProfiles(
-		filepath.Join(*path, "testcases/1.coverage"),
-	)
+	cps, err := cover.ParseProfiles(*coverageFile)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	fileCPs := map[string][]*cover.Profile{}
@@ -99,7 +88,7 @@ func main() {
 	totalLines := 0
 	coveredLines := 0
 	for _, f := range fs {
-		fc := ComputeFileChangesFromHunk(f)
+		fc := computeFileChangesFromHunk(f)
 
 		if strings.Contains(fc.Filename, "_test.go") {
 			continue
@@ -110,11 +99,11 @@ func main() {
 		if strings.Contains(fc.Filename, "vendor/") {
 			continue
 		}
-		aois := []AreaOfInterest{}
 
+		aois := []AreaOfInterest{}
 		fb, err := os.ReadFile(filepath.Join(*path, fc.Filename))
 		if err != err {
-			panic(err)
+			log.Fatal(err)
 		}
 
 		fileLines := strings.Split(string(fb), "\n")
@@ -131,7 +120,7 @@ func main() {
 		fset := token.NewFileSet()
 		parsedFile, err := parser.ParseFile(fset, fc.Filename, nil, 0)
 		if err != nil {
-			panic(err)
+			log.Fatal(err)
 		}
 
 		// we don't care about coverage on the main package
@@ -176,12 +165,10 @@ func main() {
 			}
 
 			loi[ln] = false
-		}
-
-		for range loi {
 			totalLines++
 		}
 
+		// check if we have coverage data for this
 		if _, ok := fileCPs[fc.Filename]; !ok {
 			continue
 		}
@@ -191,14 +178,9 @@ func main() {
 				for i := b.StartLine; i <= b.EndLine; i++ {
 					if _, ok := loi[i]; ok {
 						loi[i] = true
+						coveredLines++
 					}
 				}
-			}
-		}
-
-		for _, v := range loi {
-			if v {
-				coveredLines++
 			}
 		}
 	}
