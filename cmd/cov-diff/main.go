@@ -7,6 +7,7 @@ import (
 	"go/parser"
 	"go/token"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/panagiotisptr/cov-diff/hello"
@@ -15,6 +16,7 @@ import (
 )
 
 var moduleName = flag.String("module", "", "the name of the go module")
+var path = flag.String("path", "", "the path to the module")
 
 type FileChanges struct {
 	Filename    string
@@ -55,7 +57,7 @@ func ComputeFileChangesFromHunk(
 func main() {
 	flag.Parse()
 	hello.SayHello()
-	b, err := os.ReadFile("testcases/1.txt")
+	b, err := os.ReadFile(filepath.Join(*path, "testcases/1.txt"))
 	if err != err {
 		panic(err)
 	}
@@ -64,7 +66,9 @@ func main() {
 		panic(err)
 	}
 
-	cps, err := cover.ParseProfiles("testcases/1.coverage")
+	cps, err := cover.ParseProfiles(
+		filepath.Join(*path, "testcases/1.coverage"),
+	)
 	if err != nil {
 		panic(err)
 	}
@@ -89,9 +93,12 @@ func main() {
 		if len(fc.Filename) > 3 && fc.Filename[len(fc.Filename)-3:] != ".go" {
 			continue
 		}
+		if strings.Contains(fc.Filename, "vendor/") {
+			continue
+		}
 		aois := []AreaOfInterest{}
 
-		fb, err := os.ReadFile(fc.Filename)
+		fb, err := os.ReadFile(filepath.Join(*path, fc.Filename))
 		if err != err {
 			panic(err)
 		}
