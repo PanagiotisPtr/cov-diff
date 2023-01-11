@@ -6,17 +6,21 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
+	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 
-	"github.com/panagiotisptr/cov-diff/hello"
 	"github.com/sourcegraph/go-diff/diff"
 	"golang.org/x/tools/cover"
 )
 
 var moduleName = flag.String("module", "", "the name of the go module")
 var path = flag.String("path", "", "the path to the module")
+var coverageFile = flag.String("coverfile", "", "location of the coverage file")
+var sourceBranch = flag.String("source", "", "the name of the source branch (the one we have coverage for)")
+var targetBranch = flag.String("target", "", "the name of the target branch (usually main/master)")
 
 type FileChanges struct {
 	Filename    string
@@ -54,9 +58,19 @@ func ComputeFileChangesFromHunk(
 	return fc
 }
 
+func exitWithError(err error, msg string) {
+	fmt.Printf("%s: %v\n", msg, err)
+	os.Exit(1)
+}
+
 func main() {
+	out, err := exec.Command("git", "diff").Output()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("The date is %s\n", out)
+	return
 	flag.Parse()
-	hello.SayHello()
 	b, err := os.ReadFile(filepath.Join(*path, "testcases/1.txt"))
 	if err != err {
 		panic(err)
