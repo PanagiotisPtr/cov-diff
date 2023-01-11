@@ -60,7 +60,6 @@ func computeFileChangesFromHunk(
 
 func main() {
 	flag.Parse()
-
 	diffBytes, err := exec.Command("git", "diff", *targetBranch, *sourceBranch).Output()
 	if err != nil {
 		log.Fatal(err)
