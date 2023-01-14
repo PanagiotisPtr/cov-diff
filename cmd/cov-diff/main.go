@@ -16,7 +16,6 @@ import (
 	"golang.org/x/tools/cover"
 )
 
-var moduleName = flag.String("module", "", "the name of the go module")
 var path = flag.String("path", "", "the path to the module")
 var coverageFile = flag.String("coverfile", "", "location of the coverage file")
 var sourceBranch = flag.String("source", "", "the name of the source branch (the one we have coverage for)")
@@ -76,11 +75,10 @@ func main() {
 
 	fileCPs := map[string][]*cover.Profile{}
 	for _, cp := range cps {
-		relativeFilename := strings.Split(cp.FileName, *moduleName+"/")[1]
-		if _, ok := fileCPs[relativeFilename]; !ok {
-			fileCPs[relativeFilename] = []*cover.Profile{}
+		if _, ok := fileCPs[cp.FileName]; !ok {
+			fileCPs[cp.FileName] = []*cover.Profile{}
 		}
-		fileCPs[relativeFilename] = append(fileCPs[relativeFilename], cp)
+		fileCPs[cp.FileName] = append(fileCPs[cp.FileName], cp)
 	}
 
 	totalLines := 0
