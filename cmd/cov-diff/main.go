@@ -40,7 +40,6 @@ func computeFileChangesFromHunk(
 	filename := strings.Join(parts[1:], "/")
 
 	fc.Filename = filename
-
 	for _, h := range f.Hunks {
 		lines := strings.Split(string(h.Body), "\n")
 		ln := int(h.NewStartLine)
