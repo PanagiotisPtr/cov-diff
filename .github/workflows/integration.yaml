@@ -19,7 +19,7 @@ jobs:
         with:
           path: .
           coverprofile: coverage.out
-          source: ${{ github.ref }}
+          source: ${{ github.head_ref }}
           target: ${{ github.base_ref }}
           module: github.com/panagiotisptr/cov-diff
 
