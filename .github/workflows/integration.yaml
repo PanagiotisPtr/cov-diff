@@ -7,7 +7,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: run tests
         run: |
@@ -15,7 +17,7 @@ jobs:
 
       - name: generate diff
         run: |
-          git diff ${{ github.base_ref }} ${{ github.head_ref }} > pr.diff
+          git diff origin/${{ github.base_ref }} origin/${{ github.head_ref }} > pr.diff
 
       - name: self test
         id: selftest
@@ -26,6 +28,8 @@ jobs:
           diff: pr.diff
           module: github.com/panagiotisptr/cov-diff
 
-      - name: Check outputs
-        run: |
-          test "${{ steps.selftest.outputs.myOutput }}" == "Hello universe"
+      - name: Comment
+        uses: mshick/add-pr-comment@v2
+        with:
+          message: |
+            Coverage on new code: ${{ steps.selftest.outputs.covdiff }}%
