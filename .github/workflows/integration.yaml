@@ -1,0 +1,19 @@
+name: Integration Test
+
+on:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+        # Put your action repo here
+        uses: panagiotisptr/cov-diff@master
+
+      - name: Check outputs
+        with:
+          myInput: "universe"
+        run: |
+          test "${{ steps.selftest.outputs.myOutput }}" == "Hello universe"

@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"path/filepath"
 
+	"github.com/actions-go/toolkit/core"
 	"github.com/panagiotisptr/cov-diff/cov"
 	"github.com/panagiotisptr/cov-diff/diff"
 	"github.com/panagiotisptr/cov-diff/files"
@@ -21,7 +22,15 @@ var targetBranch = flag.String("target", "", "the name of the target branch (usu
 var moduleName = flag.String("module", "", "the name of module")
 
 func main() {
+	core.Debug("Running action")
+	core.SetOutput("myOutput", fmt.Sprintf("Hello %s", os.Getenv("INPUT_MYINPUT")))
+
+	os.Exit(0)
 	flag.Parse()
+	if *coverageFile == "" {
+		log.Fatal("missing coverage file")
+	}
+
 	diffBytes, err := exec.Command(
 		"sh",
 		"-c",
