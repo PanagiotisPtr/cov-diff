@@ -13,14 +13,17 @@ jobs:
         run: |
           go test ./... -coverprofile=coverage.out
 
+      - name: generate diff
+        run: |
+          git diff ${{ github.base_ref }} ${{ github.head_ref }} > pr.diff
+
       - name: self test
         id: selftest
         uses: panagiotisptr/cov-diff@main
         with:
           path: .
           coverprofile: coverage.out
-          source: ${{ github.head_ref }}
-          target: ${{ github.base_ref }}
+          diff: pr.diff
           module: github.com/panagiotisptr/cov-diff
 
       - name: Check outputs

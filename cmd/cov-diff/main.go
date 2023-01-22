@@ -17,8 +17,7 @@ import (
 
 var path = flag.String("path", "", "path to the git repository")
 var coverageFile = flag.String("coverprofile", "", "location of the coverage file")
-var sourceBranch = flag.String("source", "", "the name of the source branch (the one we have coverage for)")
-var targetBranch = flag.String("target", "", "the name of the target branch (usually main/master)")
+var diffFile = flag.String("diff", "", "location of the diff file")
 var moduleName = flag.String("module", "", "the name of module")
 
 func emptyValAndActionInputSet(val string, input string) bool {
@@ -40,11 +39,8 @@ func populateFlagsFromActionEnvs() {
 	if emptyValAndActionInputSet(*coverageFile, "coverprofile") {
 		*coverageFile = getActionInput("coverprofile")
 	}
-	if emptyValAndActionInputSet(*sourceBranch, "source") {
-		*sourceBranch = getActionInput("source")
-	}
-	if emptyValAndActionInputSet(*targetBranch, "target") {
-		*targetBranch = getActionInput("target")
+	if emptyValAndActionInputSet(*diffFile, "diff") {
+		*diffFile = getActionInput("diff")
 	}
 	if emptyValAndActionInputSet(*moduleName, "module") {
 		*moduleName = getActionInput("module")
@@ -55,38 +51,15 @@ func main() {
 	flag.Parse()
 	populateFlagsFromActionEnvs()
 
-	fmt.Println(*path)
-	fmt.Println(*coverageFile)
-	fmt.Println(*sourceBranch)
-	fmt.Println(*targetBranch)
-	fmt.Println(*moduleName)
-
 	if *coverageFile == "" {
 		log.Fatal("missing coverage file")
 	}
 
-	fmt.Printf(
-		"running: sh -c (cd %s && git diff %s %s)\n",
-		*path,
-		*targetBranch,
-		*sourceBranch,
-	)
-
-	diffBytes, err := exec.Command(
-		"sh",
-		"-c",
-		fmt.Sprintf(
-			"(cd %s && git diff %s %s)",
-			*path,
-			*targetBranch,
-			*sourceBranch,
-		),
-	).Output()
+	diffBytes, err := os.ReadFile(*diffFile)
 	if err != nil {
-		log.Fatal(err, "failed to get diff")
+		log.Fatal(err, "failed to read diff file")
 	}
-
-	fmt.Println("diff bytes: ", string(diffBytes))
+	fmt.Println("diff file: ", string(diffBytes))
 
 	diffIntervals, err := diff.GetFilesIntervalsFromDiff(diffBytes)
 	if err != nil {
@@ -139,7 +112,6 @@ func main() {
 	}
 
 	fmt.Printf("Coverage on new lines: %d%%\n", percentCoverage)
-
 	if getActionInput("coverprofile") != "" {
 		_, outputErr := exec.Command(
 			"sh",
