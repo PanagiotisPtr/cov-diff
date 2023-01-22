@@ -15,14 +15,23 @@ import (
 )
 
 var path = flag.String("path", "", "path to the git repository")
-var coverageFile = flag.String("coverfile", "", "location of the coverage file")
+var coverageFile = flag.String("coverprofile", "", "location of the coverage file")
 var sourceBranch = flag.String("source", "", "the name of the source branch (the one we have coverage for)")
 var targetBranch = flag.String("target", "", "the name of the target branch (usually main/master)")
 var moduleName = flag.String("module", "", "the name of module")
 
 func main() {
 	flag.Parse()
-	diffBytes, err := exec.Command("git", "diff", *targetBranch, *sourceBranch).Output()
+	diffBytes, err := exec.Command(
+		"sh",
+		"-c",
+		fmt.Sprintf(
+			"(cd %s && git diff %s %s)",
+			*path,
+			*targetBranch,
+			*sourceBranch,
+		),
+	).Output()
 	if err != nil {
 		log.Fatal(err)
 	}

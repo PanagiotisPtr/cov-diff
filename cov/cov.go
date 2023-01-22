@@ -27,6 +27,9 @@ func GetFilesIntervalsFromCoverage(
 			filesIntervals[cp.FileName] = []interval.Interval{}
 		}
 		for _, b := range cp.Blocks {
+			if b.Count == 0 {
+				continue
+			}
 			filesIntervals[cp.FileName] = append(filesIntervals[cp.FileName], interval.Interval{
 				Start: b.StartLine,
 				End:   b.EndLine,

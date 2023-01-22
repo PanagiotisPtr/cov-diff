@@ -88,7 +88,7 @@ func GetIntervalsFromFile(
 				if err != nil {
 					return intervals, err
 				}
-				endLine, err := GetLineFromToken(lines, mid.Body.End())
+				endLine, err := GetLineFromToken(lines, mid.Body.End()-1)
 				if err != nil {
 					return intervals, err
 				}
