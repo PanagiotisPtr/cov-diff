@@ -55,9 +55,22 @@ func main() {
 	flag.Parse()
 	populateFlagsFromActionEnvs()
 
+	fmt.Println(*path)
+	fmt.Println(*coverageFile)
+	fmt.Println(*sourceBranch)
+	fmt.Println(*targetBranch)
+	fmt.Println(*moduleName)
+
 	if *coverageFile == "" {
 		log.Fatal("missing coverage file")
 	}
+
+	fmt.Printf(
+		"running: sh -c (cd %s && git diff %s %s)\n",
+		*path,
+		*targetBranch,
+		*sourceBranch,
+	)
 
 	diffBytes, err := exec.Command(
 		"sh",
@@ -70,8 +83,10 @@ func main() {
 		),
 	).Output()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal(err, "failed to get diff")
 	}
+
+	fmt.Println("diff bytes: ", string(diffBytes))
 
 	diffIntervals, err := diff.GetFilesIntervalsFromDiff(diffBytes)
 	if err != nil {
