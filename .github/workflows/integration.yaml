@@ -11,7 +11,7 @@ jobs:
 
       - name: self test
         id: selftest
-        uses: panagiotisptr/cov-diff@master
+        uses: panagiotisptr/cov-diff@main
         with:
           myInput: universe
 
