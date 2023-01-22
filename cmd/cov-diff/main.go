@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/actions-go/toolkit/core"
 	"github.com/panagiotisptr/cov-diff/cov"
 	"github.com/panagiotisptr/cov-diff/diff"
 	"github.com/panagiotisptr/cov-diff/files"
@@ -110,14 +111,8 @@ func main() {
 	}
 
 	fmt.Printf("Coverage on new lines: %d%%\n", percentCoverage)
+
 	if getActionInput("coverprofile") != "" {
-		outputErr := os.Setenv("GITHUB_OUTPUT", fmt.Sprintf(
-			"%s\n%s",
-			os.Getenv("GITHUB_OUTPUT"),
-			fmt.Sprintf("{covdiff}={%d}", percentCoverage)),
-		)
-		if outputErr != nil {
-			log.Fatal("failed to write output: ", outputErr)
-		}
+		core.SetOutput("covdiff", fmt.Sprintf("%d", percentCoverage))
 	}
 }
