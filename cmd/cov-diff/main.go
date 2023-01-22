@@ -7,8 +7,8 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 
-	"github.com/actions-go/toolkit/core"
 	"github.com/panagiotisptr/cov-diff/cov"
 	"github.com/panagiotisptr/cov-diff/diff"
 	"github.com/panagiotisptr/cov-diff/files"
@@ -21,12 +21,40 @@ var sourceBranch = flag.String("source", "", "the name of the source branch (the
 var targetBranch = flag.String("target", "", "the name of the target branch (usually main/master)")
 var moduleName = flag.String("module", "", "the name of module")
 
-func main() {
-	core.Debug("Running action")
-	core.SetOutput("myOutput", fmt.Sprintf("Hello %s", os.Getenv("INPUT_MYINPUT")))
-	os.Exit(0)
+func emptyValAndActionInputSet(val string, input string) bool {
+	return val == "" && os.Getenv(
+		fmt.Sprintf("INPUT_%s", strings.ToUpper(input)),
+	) != ""
+}
 
+func getActionInput(input string) string {
+	return os.Getenv(
+		fmt.Sprintf("INPUT_%s", strings.ToUpper(input)),
+	)
+}
+
+func populateFlagsFromActionEnvs() {
+	if emptyValAndActionInputSet(*path, "path") {
+		*path = getActionInput("path")
+	}
+	if emptyValAndActionInputSet(*coverageFile, "coverprofile") {
+		*coverageFile = getActionInput("coverprofile")
+	}
+	if emptyValAndActionInputSet(*sourceBranch, "source") {
+		*sourceBranch = getActionInput("source")
+	}
+	if emptyValAndActionInputSet(*targetBranch, "target") {
+		*targetBranch = getActionInput("target")
+	}
+	if emptyValAndActionInputSet(*moduleName, "module") {
+		*moduleName = getActionInput("module")
+	}
+}
+
+func main() {
 	flag.Parse()
+	populateFlagsFromActionEnvs()
+
 	if *coverageFile == "" {
 		log.Fatal("missing coverage file")
 	}
@@ -96,4 +124,14 @@ func main() {
 	}
 
 	fmt.Printf("Coverage on new lines: %d%%\n", percentCoverage)
+	if getActionInput("coverprofile") != "" {
+		_, outputErr := exec.Command(
+			"sh",
+			"-c",
+			fmt.Sprintf(`echo "{covdiff}={%d}" >> $GITHUB_OUTPUT`, percentCoverage),
+		).Output()
+		if outputErr != nil {
+			log.Fatal(outputErr, "failed to write output")
+		}
+	}
 }

@@ -2,12 +2,20 @@ name: "Go Coverage Diff Action"
 description: "Show coverage difference between branches in a pull request"
 author: "Panagiotis Petridis"
 inputs:
-  myInput:
-    description: "Input to use"
-    default: "world"
+  path:
+    description: "path to git repo"
+    default: "."
+  coverprofile:
+    description: "path to coverprofile"
+  source:
+    description: "the name of the source branch"
+  target:
+    description: "the name of the target branch"
+  module:
+    description: "the Go module name"
 outputs:
-  myOutput:
-    description: "Output from the action"
+  covdiff:
+    description: "the coverage difference (0-100)"
 runs:
   using: "docker"
   image: "Dockerfile"

@@ -9,11 +9,19 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: run tests
+        run: |
+          go test ./... -coverprofile=coverage.out
+
       - name: self test
         id: selftest
         uses: panagiotisptr/cov-diff@main
         with:
-          myInput: universe
+          path: .
+          coverprofile: coverage.out
+          source: ${{ github.ref }}
+          target: ${{ github.base_ref }}
+          module: github.com/panagiotisptr/cov-diff
 
       - name: Check outputs
         run: |
