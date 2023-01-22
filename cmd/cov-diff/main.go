@@ -24,6 +24,7 @@ var moduleName = flag.String("module", "", "the name of module")
 func main() {
 	core.Debug("Running action")
 	core.SetOutput("myOutput", fmt.Sprintf("Hello %s", os.Getenv("INPUT_MYINPUT")))
+
 	os.Exit(0)
 
 	flag.Parse()
