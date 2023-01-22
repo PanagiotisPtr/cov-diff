@@ -9,12 +9,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-        # Put your action repo here
-      - name: integration test
+      - name: self test
+        id: selftest
         uses: panagiotisptr/cov-diff@master
+        with:
+          myInput: universe
 
       - name: Check outputs
-        with:
-          myInput: "universe"
         run: |
           test "${{ steps.selftest.outputs.myOutput }}" == "Hello universe"
