@@ -57,9 +57,8 @@ func main() {
 
 	diffBytes, err := os.ReadFile(*diffFile)
 	if err != nil {
-		log.Fatal(err, "failed to read diff file")
+		log.Fatal("failed to read diff file: ", err)
 	}
-	fmt.Println("diff file: ", string(diffBytes))
 
 	diffIntervals, err := diff.GetFilesIntervalsFromDiff(diffBytes)
 	if err != nil {
@@ -119,7 +118,7 @@ func main() {
 			fmt.Sprintf(`echo "{covdiff}={%d}" >> $GITHUB_OUTPUT`, percentCoverage),
 		).Output()
 		if outputErr != nil {
-			log.Fatal(outputErr, "failed to write output")
+			log.Fatal("failed to write output: ", outputErr)
 		}
 	}
 }
