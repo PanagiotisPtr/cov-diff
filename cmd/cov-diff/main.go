@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 
@@ -57,9 +56,8 @@ func main() {
 
 	diffBytes, err := os.ReadFile(*diffFile)
 	if err != nil {
-		log.Fatal(err, "failed to read diff file")
+		log.Fatal("failed to read diff file: ", err)
 	}
-	fmt.Println("diff file: ", string(diffBytes))
 
 	diffIntervals, err := diff.GetFilesIntervalsFromDiff(diffBytes)
 	if err != nil {
@@ -113,13 +111,13 @@ func main() {
 
 	fmt.Printf("Coverage on new lines: %d%%\n", percentCoverage)
 	if getActionInput("coverprofile") != "" {
-		_, outputErr := exec.Command(
-			"sh",
-			"-c",
-			fmt.Sprintf(`echo "{covdiff}={%d}" >> $GITHUB_OUTPUT`, percentCoverage),
-		).Output()
+		outputErr := os.Setenv("GITHUB_OUTPUT", fmt.Sprintf(
+			"%s\n%s",
+			os.Getenv("GITHUB_OUTPUT"),
+			fmt.Sprintf("{covdiff}={%d}", percentCoverage)),
+		)
 		if outputErr != nil {
-			log.Fatal(outputErr, "failed to write output")
+			log.Fatal("failed to write output: ", outputErr)
 		}
 	}
 }
