@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 
@@ -112,11 +111,11 @@ func main() {
 
 	fmt.Printf("Coverage on new lines: %d%%\n", percentCoverage)
 	if getActionInput("coverprofile") != "" {
-		_, outputErr := exec.Command(
-			"sh",
-			"-c",
-			fmt.Sprintf(`echo "{covdiff}={%d}" >> $GITHUB_OUTPUT`, percentCoverage),
-		).Output()
+		outputErr := os.Setenv("GITHUB_OUTPUT", fmt.Sprintf(
+			"%s\n%s",
+			os.Getenv("GITHUB_OUTPUT"),
+			fmt.Sprintf("{covdiff}={%d}", percentCoverage)),
+		)
 		if outputErr != nil {
 			log.Fatal("failed to write output: ", outputErr)
 		}

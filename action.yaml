@@ -7,10 +7,8 @@ inputs:
     default: "."
   coverprofile:
     description: "path to coverprofile"
-  source:
-    description: "the name of the source branch"
-  target:
-    description: "the name of the target branch"
+  diff:
+    description: "path to diff file"
   module:
     description: "the Go module name"
 outputs:
