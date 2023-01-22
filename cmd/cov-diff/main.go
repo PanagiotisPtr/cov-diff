@@ -110,6 +110,7 @@ func main() {
 	}
 
 	fmt.Printf("Coverage on new lines: %d%%\n", percentCoverage)
+
 	if getActionInput("coverprofile") != "" {
 		outputErr := os.Setenv("GITHUB_OUTPUT", fmt.Sprintf(
 			"%s\n%s",
