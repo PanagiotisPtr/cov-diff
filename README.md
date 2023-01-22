@@ -30,11 +30,13 @@ jobs:
       - name: run tests
         run: |
           go test ./... -coverprofile=coverage.out
+          
       - name: generate diff
         run: |
           git diff origin/${{ github.base_ref }} origin/${{ github.head_ref }} > pr.diff
-      - name: self test
-        id: selftest
+          
+      - name: compute new code coverage
+        id: covdiffaction
         uses: panagiotisptr/cov-diff@main
         with:
           path: .
@@ -46,5 +48,5 @@ jobs:
         uses: mshick/add-pr-comment@v2
         with:
           message: |
-            Coverage on new code: ${{ steps.selftest.outputs.covdiff }}%
+            Coverage on new code: ${{ steps.covdiffaction.outputs.covdiff }}%
 ```
