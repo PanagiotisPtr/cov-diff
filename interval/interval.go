@@ -12,6 +12,10 @@ type Interval struct {
 type FilesIntervals = map[string][]Interval
 
 func joinSortedIntervals(a []Interval) []Interval {
+	if len(a) == 0 {
+		return a
+	}
+
 	result := []Interval{}
 	last := a[0]
 	for _, i := range a {
