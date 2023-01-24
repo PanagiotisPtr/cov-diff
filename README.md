@@ -33,7 +33,7 @@ jobs:
           
       - name: generate diff
         run: |
-          git diff origin/${{ github.base_ref }} origin/${{ github.head_ref }} > pr.diff
+          git diff origin/${{ github.base_ref }}...origin/${{ github.head_ref }} > pr.diff
           
       - name: compute new code coverage
         id: covdiffaction
@@ -50,3 +50,6 @@ jobs:
           message: |
             Coverage on new code: ${{ steps.covdiffaction.outputs.covdiff }}%
 ```
+
+## Things to watch out for
+When generating the diff, keep in mind that the `target` branch will have commits that your `feature` branch won't. You'd normally get these changes if you merged the target branch into your feature branch right before opening the PR. In order to ignore these changes during the diff, you need to add the 3 dots (`...`) between the two branches (see example above). You can find the relevant documentation here: https://git-scm.com/docs/git-diff#Documentation/git-diff.txt-emgitdiffemltoptionsgtltcommitgtltcommitgt--ltpathgt82308203-1
