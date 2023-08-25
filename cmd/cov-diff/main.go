@@ -19,10 +19,9 @@ var path = flag.String("path", "", "path to the git repository")
 var coverageFile = flag.String("coverprofile", "", "location of the coverage file")
 var diffFile = flag.String("diff", "", "location of the diff file")
 var moduleName = flag.String("module", "", "the name of module")
-var ignoreMain = flag.Bool("ignore-main", true, "ignore main package")
+var ignoreMain = flag.String("ignore-main", "true", "ignore main package")
 
 func emptyValAndActionInputSet(val string, input string) bool {
-	fmt.Println("emptyValAndActionInputSet", val, input)
 	return val == "" && os.Getenv(
 		fmt.Sprintf("INPUT_%s", strings.ToUpper(input)),
 	) != ""
@@ -47,8 +46,8 @@ func populateFlagsFromActionEnvs() {
 	if emptyValAndActionInputSet(*moduleName, "module") {
 		*moduleName = getActionInput("module")
 	}
-	if emptyValAndActionInputSet(fmt.Sprintf("%t", *ignoreMain), "ignore-main") {
-		*ignoreMain = getActionInput("ignore-main") == "true"
+	if emptyValAndActionInputSet(*ignoreMain, "ignore-main") {
+		*ignoreMain = getActionInput("ignore-main")
 	}
 }
 
@@ -93,7 +92,7 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		fi, err := files.GetIntervalsFromFile(fileBytes, *ignoreMain)
+		fi, err := files.GetIntervalsFromFile(fileBytes, *ignoreMain == "true")
 		if err != nil {
 			log.Fatal(err)
 		}
