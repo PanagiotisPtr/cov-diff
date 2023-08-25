@@ -19,7 +19,7 @@ var path = flag.String("path", "", "path to the git repository")
 var coverageFile = flag.String("coverprofile", "", "location of the coverage file")
 var diffFile = flag.String("diff", "", "location of the diff file")
 var moduleName = flag.String("module", "", "the name of module")
-var ignoreMain = flag.String("ignore-main", "true", "ignore main package")
+var ignoreMain = flag.String("ignore-main", "", "ignore main package")
 
 func emptyValAndActionInputSet(val string, input string) bool {
 	fmt.Println("emptyValAndActionInputSet", val, input)
