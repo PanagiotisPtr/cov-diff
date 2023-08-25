@@ -22,6 +22,7 @@ var moduleName = flag.String("module", "", "the name of module")
 var ignoreMain = flag.Bool("ignore-main", true, "ignore main package")
 
 func emptyValAndActionInputSet(val string, input string) bool {
+	fmt.Println("emptyValAndActionInputSet", val, input)
 	return val == "" && os.Getenv(
 		fmt.Sprintf("INPUT_%s", strings.ToUpper(input)),
 	) != ""
@@ -47,7 +48,6 @@ func populateFlagsFromActionEnvs() {
 		*moduleName = getActionInput("module")
 	}
 	if emptyValAndActionInputSet(fmt.Sprintf("%t", *ignoreMain), "ignore-main") {
-		fmt.Println("action input", getActionInput("ignore-main"))
 		*ignoreMain = getActionInput("ignore-main") == "true"
 	}
 }
