@@ -15,7 +15,7 @@ The algorithm computes 3 sets of intervals, where interval is a struct that has 
 - The second set contains all the intervals of the lines we care about. These are the intervals where functions exist (includes function definition and body).
   We get this using the Go parser from the standard library so this only works for Go. These are the interesting lines and the ones we want to cover with tests
   anything outside of functions such as struct definitions and var declerations are ignored. We also ignore anything under vendor and everything in `package main`
-  by default. You can include `package main` by setting the `include-main` flag to true.
+  by default. You can include `package main` by setting the `ignore-main` flag to false.
 - The third set contains the intervals of all the lines covered by tests.
 
 Finally the total lines that need to be covered are: `Union(diffLines, functionLines)` - The lines that changed and are inside functions
