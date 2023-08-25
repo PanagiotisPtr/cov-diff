@@ -22,7 +22,6 @@ var moduleName = flag.String("module", "", "the name of module")
 var ignoreMain = flag.String("ignore-main", "", "ignore main package")
 
 func emptyValAndActionInputSet(val string, input string) bool {
-	fmt.Println("emptyValAndActionInputSet", val, input)
 	return val == "" && os.Getenv(
 		fmt.Sprintf("INPUT_%s", strings.ToUpper(input)),
 	) != ""
@@ -55,8 +54,6 @@ func populateFlagsFromActionEnvs() {
 func main() {
 	flag.Parse()
 	populateFlagsFromActionEnvs()
-
-	fmt.Println("ignore-main: ", *ignoreMain)
 
 	if *coverageFile == "" {
 		log.Fatal("missing coverage file")
