@@ -55,6 +55,8 @@ func main() {
 	flag.Parse()
 	populateFlagsFromActionEnvs()
 
+	fmt.Println("ignore-main: ", *ignoreMain)
+
 	if *coverageFile == "" {
 		log.Fatal("missing coverage file")
 	}
