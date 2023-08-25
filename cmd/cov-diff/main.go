@@ -47,6 +47,7 @@ func populateFlagsFromActionEnvs() {
 		*moduleName = getActionInput("module")
 	}
 	if emptyValAndActionInputSet(fmt.Sprintf("%t", *ignoreMain), "ignore-main") {
+		fmt.Println("action input", getActionInput("ignore-main"))
 		*ignoreMain = getActionInput("ignore-main") == "true"
 	}
 }
