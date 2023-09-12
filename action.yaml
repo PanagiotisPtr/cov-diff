@@ -12,6 +12,7 @@ inputs:
   module:
     description: "the Go module name"
   ignore-main:
+    default: "true"
     description: "ignore main package"
 outputs:
   covdiff:
