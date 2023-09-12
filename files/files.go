@@ -10,7 +10,7 @@ import (
 	"github.com/panagiotisptr/cov-diff/interval"
 )
 
-var LineNotFound error = errors.New("line not found")
+var ErrLineNotFound error = errors.New("line not found")
 
 func ShouldSkipFile(filename string) bool {
 	if strings.Contains(filename, "_test.go") {
@@ -39,7 +39,7 @@ func GetLineFromToken(
 	l := lines
 	for {
 		if len(l) == 0 {
-			return 0, LineNotFound
+			return 0, ErrLineNotFound
 		}
 		mid := len(l) / 2
 		if l[mid].Start <= pos && l[mid].End >= pos {
@@ -54,6 +54,7 @@ func GetLineFromToken(
 
 func GetIntervalsFromFile(
 	fileBytes []byte,
+	ignoreMain bool,
 ) ([]interval.Interval, error) {
 	intervals := []interval.Interval{}
 	fileLines := strings.Split(string(fileBytes), "\n")
@@ -75,8 +76,7 @@ func GetIntervalsFromFile(
 		return intervals, err
 	}
 
-	// we don't care about coverage on the main package
-	if parsedFile.Name.Name == "main" {
+	if ignoreMain && parsedFile.Name.Name == "main" {
 		return intervals, err
 	}
 

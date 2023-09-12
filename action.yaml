@@ -11,6 +11,9 @@ inputs:
     description: "path to diff file"
   module:
     description: "the Go module name"
+  ignore-main:
+    default: "true"
+    description: "ignore main package"
 outputs:
   covdiff:
     description: "the coverage difference (0-100)"
