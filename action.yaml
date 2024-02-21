@@ -14,6 +14,9 @@ inputs:
   ignore-main:
     default: "true"
     description: "ignore main package"
+  ignore-empty:
+    default: "false"
+    description: "ignore empty lines"
 outputs:
   covdiff:
     description: "the coverage difference (0-100)"

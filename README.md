@@ -48,6 +48,7 @@ jobs:
           coverprofile: coverage.out
           diff: pr.diff
           module: github.com/panagiotisptr/cov-diff
+          ignore-empty: true
 
       - name: Comment
         uses: mshick/add-pr-comment@v2
