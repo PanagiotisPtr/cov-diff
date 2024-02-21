@@ -1,6 +1,7 @@
 package interval
 
 import (
+	"slices"
 	"sort"
 )
 
@@ -34,6 +35,22 @@ func Sum(a []Interval) int {
 	sum := 0
 	for _, i := range a {
 		sum += i.End - i.Start + 1
+	}
+
+	return sum
+}
+
+func TotalWhitespace(mi []Interval, lines []string) int {
+	var sum int
+	for _, interval := range mi {
+		l := lines[interval.Start:interval.End]
+		ll := len(l)
+
+		l = slices.DeleteFunc(l, func(s string) bool {
+			return s == ""
+		})
+
+		sum += ll - len(l)
 	}
 
 	return sum

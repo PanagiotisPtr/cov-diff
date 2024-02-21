@@ -53,11 +53,10 @@ func GetLineFromToken(
 }
 
 func GetIntervalsFromFile(
-	fileBytes []byte,
+	fileLines []string,
 	ignoreMain bool,
 ) ([]interval.Interval, error) {
 	intervals := []interval.Interval{}
-	fileLines := strings.Split(string(fileBytes), "\n")
 	count := 0
 	// this will be sorted
 	lines := make([]line, len(fileLines)+1)
@@ -71,7 +70,7 @@ func GetIntervalsFromFile(
 	}
 
 	fset := token.NewFileSet()
-	parsedFile, err := parser.ParseFile(fset, "", fileBytes, 0)
+	parsedFile, err := parser.ParseFile(fset, "", strings.Join(fileLines, "\n"), 0)
 	if err != nil {
 		return intervals, err
 	}
@@ -84,17 +83,18 @@ func GetIntervalsFromFile(
 		switch mid := d.(type) {
 		case *ast.FuncDecl:
 			if mid.Body.Pos().IsValid() && mid.Body.End().IsValid() {
-				startLine, err := GetLineFromToken(lines, mid.Body.Pos())
+				// use Lbrace to account for multi line def
+				startLine, err := GetLineFromToken(lines, mid.Body.Lbrace)
 				if err != nil {
 					return intervals, err
 				}
-				endLine, err := GetLineFromToken(lines, mid.Body.End()-1)
+				endLine, err := GetLineFromToken(lines, mid.Body.Rbrace)
 				if err != nil {
 					return intervals, err
 				}
 				intervals = append(intervals, interval.Interval{
-					Start: startLine,
-					End:   endLine,
+					Start: startLine + 1, // exclude func decl
+					End:   endLine - 1,   // exclude func rbrace
 				})
 			}
 		}

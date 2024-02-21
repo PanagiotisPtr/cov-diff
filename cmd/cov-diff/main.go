@@ -20,6 +20,7 @@ var coverageFile = flag.String("coverprofile", "", "location of the coverage fil
 var diffFile = flag.String("diff", "", "location of the diff file")
 var moduleName = flag.String("module", "", "the name of module")
 var ignoreMain = flag.String("ignore-main", "", "ignore main package")
+var ignoreEmpty = flag.String("ignore-empty", "", "ignore empty lines")
 
 func emptyValAndActionInputSet(val string, input string) bool {
 	return val == "" && os.Getenv(
@@ -48,6 +49,9 @@ func populateFlagsFromActionEnvs() {
 	}
 	if emptyValAndActionInputSet(*ignoreMain, "ignore-main") {
 		*ignoreMain = getActionInput("ignore-main")
+	}
+	if emptyValAndActionInputSet(*ignoreEmpty, "ignore-empty") {
+		*ignoreEmpty = getActionInput("ignore-empty")
 	}
 }
 
@@ -90,7 +94,9 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		fi, err := files.GetIntervalsFromFile(fileBytes, *ignoreMain == "true")
+
+		fileLines := strings.Split(string(fileBytes), "\n")
+		fi, err := files.GetIntervalsFromFile(fileLines, *ignoreMain == "true")
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -98,6 +104,10 @@ func main() {
 		// intervals that changed and are parts of the code we care about
 		measuredIntervals := interval.Union(di, fi)
 		total += interval.Sum(measuredIntervals)
+
+		if *ignoreEmpty == "true" {
+			total -= interval.TotalWhitespace(measuredIntervals, fileLines)
+		}
 
 		fullFilename := filepath.Join(*moduleName, filename)
 		ci, ok := coverIntervals[fullFilename]
