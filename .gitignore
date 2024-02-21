@@ -1,3 +1,4 @@
 .vscode
 coverage.out
 pr.diff
+vendor/*

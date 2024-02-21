@@ -1,6 +1,6 @@
 module github.com/panagiotisptr/cov-diff
 
-go 1.19
+go 1.21
 
 require (
 	github.com/actions-go/toolkit v0.0.0-20231009202818-7b0d15d26db8
